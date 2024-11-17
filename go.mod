@@ -1,4 +1,4 @@
-module github.com/mholt/caddy-dynamicdns
+module github.com/psnfiller/caddy-dynamicdns
 
 go 1.18
 
