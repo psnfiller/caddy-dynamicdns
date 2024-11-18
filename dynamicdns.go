@@ -358,16 +358,17 @@ func (a App) allDomains() map[string][]string {
 		return a.Domains
 	}
 
-	a.logger.Info("Loaded dynamic domains", zap.Strings("domains", m))
+	a.logger.Info("Loaded dynamic domains", zap.Strings("domains", m), zap.String("domains", fmt.Sprintf("%v", a.Domains)))
 	d := make(map[string][]string)
 	for zone, domains := range a.Domains {
+		a.logger.Info("not in this zone", zap.String("domains", fmt.Sprintf("%v", a.Domains)))
 		d[zone] = domains
 		for _, h := range m {
 			name, ok := func() (string, bool) {
 				if h == zone {
 					return "@", true
 				}
-				suffix := "." + zone + "."
+				suffix := "." + strings.TrimSuffix(zone, ".")
 				if n := strings.TrimSuffix(h, suffix); n != h {
 					return n, true
 				}
@@ -375,6 +376,7 @@ func (a App) allDomains() map[string][]string {
 			}()
 			if !ok {
 				// Not in this zone.
+				a.logger.Info("not in this zone", zap.String("zone", zone), zap.String("h", string(h)))
 				continue
 			}
 			a.logger.Info("Adding dynamic domain", zap.String("domain", name))
